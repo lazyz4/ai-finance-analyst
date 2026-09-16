@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 财务经营分析助手</title>
+<style>
+  :root{
+    --navy:#1F3B63; --navy2:#2E5C8A; --band:#EAF0F7; --line:#DDE3EC;
+    --ink:#1A1A1A; --muted:#5A6472; --bg:#F4F6FB; --card:#FFFFFF;
+    --ok:#15803D; --watch:#B45309; --watchbg:#FEF3C7; --alert:#B91C1C; --alertbg:#FEE2E2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;
+    align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;color:var(--navy)}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:14px}
+  .meta-line{font-size:12px;color:var(--muted);margin-top:2px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  button{font-family:inherit;font-size:13px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);padding:7px 14px;cursor:pointer}
+  button:hover{border-color:var(--navy2);color:var(--navy)}
+  button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+  button.primary:hover{background:var(--navy2);color:#fff}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  main{max-width:1240px;margin:20px auto 60px;padding:0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px}
+  .card h2{font-size:15px;color:var(--navy);margin-bottom:12px}
+  .card h3{font-size:13px;color:var(--navy);margin:14px 0 6px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(5,1fr)}
+  .split{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  @media (max-width:1020px){.kpis{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .name{font-size:12px;color:var(--muted)}
+  .kpi .val{font-size:21px;font-weight:600;color:var(--navy);margin-top:4px;letter-spacing:-.3px}
+  .kpi .delta{font-size:12px;margin-top:2px;color:var(--muted)}
+  .up{color:var(--ok)} .down{color:var(--alert)} .flat{color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:var(--navy);color:#fff;font-weight:500;text-align:left;padding:8px 10px;white-space:nowrap}
+  td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr.watch td{background:var(--watchbg)}
+  tr.alert td{background:var(--alertbg)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11.5px;font-weight:600}
+  .tag.关注{background:var(--watchbg);color:var(--watch)}
+  .tag.预警{background:var(--alertbg);color:var(--alert)}
+  .tag.正常{background:#F1F5F9;color:var(--muted)}
+  .rule{color:var(--muted)}
+  .warn{background:var(--watchbg);border:1px solid #E3B95B;border-radius:8px;padding:10px 12px;
+    font-size:12.5px;color:#7A4A08;margin-top:10px}
+  .info{background:var(--band);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--navy)}
+  select,input{font-family:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);
+    border-radius:8px;width:100%;background:#fff;color:var(--ink)}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  .cause{margin-top:10px;border-left:3px solid var(--watch);padding-left:12px}
+  .cause h4{font-size:13px;color:var(--navy);margin-bottom:4px}
+  .cause ul{margin:4px 0 0 18px;font-size:12.5px}
+  .cause li{margin-bottom:2px}
+  .muted{color:var(--muted);font-size:12px}
+  .err{background:var(--alertbg);color:var(--alert);border-radius:8px;padding:10px 12px;font-size:12.5px;margin-top:10px}
+  .chart{width:100%;height:250px}
+  footer{max-width:1240px;margin:0 auto 40px;padding:0 20px;font-size:12px;color:var(--muted)}
+  details{margin-top:6px}
+  summary{cursor:pointer;font-size:13px;color:var(--navy2)}
+  .spin{display:inline-block;width:12px;height:12px;border:2px solid #fff;border-top-color:transparent;
+    border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="brand"><span class="logo">财</span><span>AI 财务经营分析助手</span></div>
+    <div class="meta-line" id="datasetLine">正在载入…</div>
+  </div>
+  <div class="actions">
+    <button onclick="downloadReport()">下载分析报告</button>
+    <button onclick="resetDataset()">恢复内置数据</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid kpis" id="kpis"></div>
+
+  <div class="grid split">
+    <div class="card">
+      <h2>指标判定明细</h2>
+      <div class="muted" id="signalSummary"></div>
+      <div style="overflow-x:auto;margin-top:10px">
+        <table id="signalTable">
+          <thead><tr>
+            <th>指标</th><th>类型</th><th>监测口径</th>
+            <th class="num">监测值</th><th class="num">关注阈值</th>
+            <th>状态</th><th>触发规则</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="warn">
+        规则先行、AI 后置：状态由「阈值规则」判定，大模型只负责解释信号、提出可能原因与待核查事项，
+        不参与判定，也不改写结论。
+      </div>
+      <details>
+        <summary>调整阈值？改 data/indicator_rules.csv 后重启服务即可</summary>
+        <div class="muted" style="margin-top:6px">
+          22 条规则的关注阈值、预警阈值与方向都在这个文件里；改完重启服务，本页状态、计数与报告会一起变。
+          同一套阈值在 Excel 底稿与 Power BI 度量值里也有对应实现。
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>AI 解读（可能原因与待核查事项）</h2>
+      <div class="muted">
+        模型只读取规则命中的信号、监测口径与阈值，不读取报表全文；Key 只存在你的浏览器本地。
+      </div>
+      <label for="provider">服务商</label>
+      <select id="provider"></select>
+      <label for="apiKey">API Key（BYOK）</label>
+      <input id="apiKey" type="password" placeholder="sk-…　本地 Ollama 可留空" autocomplete="off">
+      <div class="row">
+        <div>
+          <label for="model">模型（可留空用默认）</label>
+          <input id="model" placeholder="deepseek-chat">
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="primary" id="explainBtn" onclick="explain()">生成解读</button>
+      </div>
+      <div id="explainOut"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>分季度归母净利润与经营活动现金流净额</h2>
+    <svg class="chart" id="chart" viewBox="0 0 900 250" preserveAspectRatio="none"></svg>
+    <div class="muted" id="chartNote"></div>
+  </div>
+
+  <div class="card">
+    <h2>口径核对</h2>
+    <div id="caveats" class="muted">—</div>
+  </div>
+
+  <div class="card">
+    <h2>更换数据集</h2>
+    <div class="muted">
+      上传两个期间的科目明细即可换成别的公司。需要 <code>period,item,value,statement,unit</code> 五列，
+      两个期间的科目要一一对应，科目名称与规则表保持一致（<a href="/api/template">下载模板</a>）。
+      <br>当前内置数据集：美的集团 2025 年年度报告。
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div>
+        <label for="company">公司名称</label>
+        <input id="company" placeholder="例如：某某股份（000000.SZ）">
+      </div>
+      <div>
+        <label for="dsFile">科目明细 CSV</label>
+        <input id="dsFile" type="file" accept=".csv,text/csv">
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <button onclick="uploadDataset()">上传并重新分析</button>
+    </div>
+    <div id="uploadOut"></div>
+  </div>
+</main>
+
+<footer>
+  本工具用于财务分析练习与演示，输出为辅助分析材料，不构成结论、投资建议或对公司经营状况的判断依据。
+  数据来自公开披露文件，口径与限制见项目 README。
+</footer>
+
+<script>
+const state = { data: null, providers: {} };
+
+function fmt(n, d = 2) {
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  return Number(n).toLocaleString("zh-CN", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function fmtMonitor(v, basis) {
+  if (v === null || v === undefined) return "—";
+  if (String(basis).startsWith("%")) return fmt(v, 2) + "%";
+  if (String(basis).startsWith("pp")) return fmt(v, 2) + " pp";
+  return fmt(v, 2);
+}
+
+function fmtKpi(k) {
+  if (k.unit === "倍" || k.unit === "天") return fmt(k.value, k.unit === "倍" ? 2 : 1) + " " + k.unit;
+  return fmt(k.value, 0);
+}
+
+function deltaHtml(k) {
+  if (k.yoy !== undefined) {
+    const pct = k.yoy * 100;
+    const cls = pct > 0.05 ? "up" : pct < -0.05 ? "down" : "flat";
+    return `<span class="${cls}">同比 ${pct >= 0 ? "+" : ""}${fmt(pct, 1)}%</span>`;
+  }
+  const c = k.change;
+  const cls = c > 0.005 ? "up" : c < -0.005 ? "down" : "flat";
+  return `<span class="${cls}">变化 ${c >= 0 ? "+" : ""}${fmt(c, 2)} ${k.unit}</span>`;
+}
+
+function renderKpis(list) {
+  document.getElementById("kpis").innerHTML = list.map(k => `
+    <div class="kpi">
+      <div class="name">${k.name}</div>
+      <div class="val">${fmtKpi(k)}</div>
+      <div class="delta">${deltaHtml(k)}</div>
+    </div>`).join("");
+}
+
+function renderSignals(data) {
+  const rows = data.signals.map(s => `
+    <tr class="${s.status === "关注" ? "watch" : s.status === "预警" ? "alert" : ""}">
+      <td>${s.item}</td>
+      <td>${s.kind}</td>
+      <td>${s.monitor_basis}</td>
+      <td class="num">${fmtMonitor(s.monitor_value, s.monitor_basis)}</td>
+      <td class="num">${fmt(s.watch_threshold, 2)}</td>
+      <td><span class="tag ${s.status}">${s.status}</span></td>
+      <td class="rule">${s.status === "正常" ? "—" : s.rule_desc}</td>
+    </tr>`).join("");
+  document.querySelector("#signalTable tbody").innerHTML = rows;
+  document.getElementById("signalSummary").textContent =
+    `共 ${data.total} 项：预警 ${data.counts["预警"] || 0} 项、关注 ${data.counts["关注"] || 0} 项、正常 ${data.counts["正常"] || 0} 项`;
+}
+
+function renderChart(rows) {
+  const svg = document.getElementById("chart");
+  const note = document.getElementById("chartNote");
+  if (!rows || !rows.length) { svg.innerHTML = ""; note.textContent = ""; return; }
+
+  const keys = ["归母净利润", "经营活动现金流净额"];
+  const W = 900, H = 250, padL = 70, padR = 20, padT = 20, padB = 40;
+  const values = [];
+  rows.forEach(r => keys.forEach(k => { if (typeof r[k] === "number") values.push(r[k]); }));
+  const maxV = Math.max(0, ...values);
+  const minV = Math.min(0, ...values);
+  const span = (maxV - minV) || 1;
+  const y = v => padT + (maxV - v) / span * (H - padT - padB);
+  const zero = y(0);
+  const groupW = (W - padL - padR) / rows.length;
+  const barW = Math.min(34, groupW / 3.4);
+  const colors = ["#2E5C8A", "#9DB8D6"];
+
+  let g = "";
+  g += `<line x1="${padL}" y1="${zero}" x2="${W - padR}" y2="${zero}" stroke="#DDE3EC"/>`;
+  for (let t = 0; t <= 4; t++) {
+    const v = minV + span * t / 4;
+    g += `<line x1="${padL}" y1="${y(v)}" x2="${W - padR}" y2="${y(v)}" stroke="#F0F3F8"/>`;
+    g += `<text x="${padL - 8}" y="${y(v) + 4}" font-size="11" fill="#5A6472" text-anchor="end">${fmt(v, 0)}</text>`;
+  }
+  rows.forEach((r, i) => {
+    const cx = padL + groupW * i + groupW / 2;
+    keys.forEach((k, j) => {
+      const v = r[k];
+      if (typeof v !== "number") return;
+      const x = cx + (j - 0.5) * (barW + 6) - barW / 2;
+      const top = Math.min(y(v), zero), h = Math.abs(y(v) - zero);
+      g += `<rect x="${x}" y="${top}" width="${barW}" height="${Math.max(h, 1)}" fill="${colors[j]}"/>`;
+    });
+    g += `<text x="${cx}" y="${H - padB + 20}" font-size="12" fill="#5A6472" text-anchor="middle">${r.quarter}</text>`;
+  });
+  g += `<rect x="${padL}" y="6" width="10" height="10" fill="${colors[0]}"/>`;
+  g += `<text x="${padL + 16}" y="15" font-size="11" fill="#5A6472">${keys[0]}</text>`;
+  g += `<rect x="${padL + 110}" y="6" width="10" height="10" fill="${colors[1]}"/>`;
+  g += `<text x="${padL + 126}" y="15" font-size="11" fill="#5A6472">${keys[1]}</text>`;
+  svg.innerHTML = g;
+
+  const q4 = rows[rows.length - 1];
+  if (typeof q4["经营活动现金流净额"] === "number" && q4["经营活动现金流净额"] < 0) {
+    note.textContent = `${q4.quarter} 经营活动现金流净额为 ${fmt(q4["经营活动现金流净额"], 0)} 百万元，是四个季度中唯一为负的一期，需要结合季节性、备货与回款节奏核查。`;
+  } else {
+    note.textContent = "";
+  }
+}
+
+function renderCaveats(list) {
+  const box = document.getElementById("caveats");
+  if (!list || !list.length) { box.textContent = "本次没有可核对项。"; return; }
+  const html = list.map(c => {
+    const cls = c.consistent ? "" : "warn";
+    const tail = c.consistent
+      ? "完全一致，可作为交叉印证。"
+      : `相差 ${fmt(c.diff, 3)}，需先核对列示口径再用于分析。`;
+    return `<div class="${cls}" style="margin-bottom:8px">
+      季度「${c.quarter_item}」合计 ${fmt(c.quarter_sum, 3)}，全年「${c.annual_item}」${fmt(c.annual_value, 3)}，${tail}
+    </div>`;
+  }).join("");
+  box.innerHTML = html;
+}
+
+async function loadAnalysis() {
+  const res = await fetch("/api/analysis");
+  const data = await res.json();
+  state.data = data;
+  const d = data.dataset;
+  document.getElementById("datasetLine").textContent =
+    `${d.company}　|　对比期间 ${d.prior_label} → ${d.current_label}　|　单位：${d.unit}　|　${d.source}`;
+  renderKpis(data.kpis);
+  renderSignals(data);
+  renderChart(data.quarterly);
+  renderCaveats(data.caveats);
+}
+
+async function loadHealth() {
+  const res = await fetch("/api/health");
+  const data = await res.json();
+  state.providers = data.providers;
+  const sel = document.getElementById("provider");
+  sel.innerHTML = Object.entries(data.providers)
+    .map(([k, v]) => `<option value="${k}">${v.label}${v.needs_key ? "" : "（无需 Key）"}</option>`).join("");
+  sel.value = localStorage.getItem("fina_provider") || "deepseek";
+  document.getElementById("model").value = localStorage.getItem("fina_model") || "";
+  document.getElementById("apiKey").value = localStorage.getItem("fina_key_" + sel.value) || "";
+  sel.onchange = () => {
+    localStorage.setItem("fina_provider", sel.value);
+    document.getElementById("apiKey").value = localStorage.getItem("fina_key_" + sel.value) || "";
+  };
+}
+
+async function explain() {
+  const out = document.getElementById("explainOut");
+  const btn = document.getElementById("explainBtn");
+  const provider = document.getElementById("provider").value;
+  const apiKey = document.getElementById("apiKey").value.trim();
+  const model = document.getElementById("model").value.trim();
+
+  localStorage.setItem("fina_provider", provider);
+  localStorage.setItem("fina_model", model);
+  localStorage.setItem("fina_key_" + provider, apiKey);
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>生成中';
+  out.innerHTML = '<div class="muted" style="margin-top:12px">正在请求模型，通常需要 10-40 秒…</div>';
+
+  try {
+    const res = await fetch("/api/explain", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider, apiKey, model })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "调用失败");
+    out.innerHTML = renderExplanation(data);
+  } catch (e) {
+    out.innerHTML = `<div class="err">${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "生成解读";
+  }
+}
+
+function renderExplanation(data) {
+  let html = `<div class="info" style="margin-top:14px">${data.summary || ""}</div>`;
+  (data.items || []).forEach(it => {
+    html += `<div class="cause">
+      <h4>${it.metric}　<span class="tag ${it.status}">${it.status}</span></h4>
+      ${it.reading ? `<div class="muted">${it.reading}</div>` : ""}
+      <h4 style="margin-top:8px">可能原因</h4>
+      <ul>${(it.possible_causes || []).map(c => `<li>${c}</li>`).join("")}</ul>
+      <h4 style="margin-top:8px">待核查事项</h4>
+      <ul>${(it.to_verify || []).map(c => `<li>${c}</li>`).join("")}</ul>
+    </div>`;
+  });
+  if ((data.data_caveats || []).length) {
+    html += `<h3>口径提示</h3><ul class="muted">${data.data_caveats.map(c => `<li>${c}</li>`).join("")}</ul>`;
+  }
+  if ((data.next_actions || []).length) {
+    html += `<h3>建议动作</h3><ul class="muted">${data.next_actions.map(c => `<li>${c}</li>`).join("")}</ul>`;
+  }
+  html += `<div class="muted" style="margin-top:10px">模型：${data.provider} / ${data.model}</div>`;
+  return html;
+}
+
+async function uploadDataset() {
+  const out = document.getElementById("uploadOut");
+  const file = document.getElementById("dsFile").files[0];
+  if (!file) { out.innerHTML = '<div class="err">请先选择 CSV 文件。</div>'; return; }
+  const csv = await file.text();
+  out.innerHTML = '<div class="muted" style="margin-top:10px">正在校验并重新分析…</div>';
+  try {
+    const res = await fetch("/api/dataset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ csv, company: document.getElementById("company").value })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "上传失败");
+    out.innerHTML = '<div class="info" style="margin-top:10px">数据集已替换。</div>';
+    await loadAnalysis();
+  } catch (e) {
+    out.innerHTML = `<div class="err">${e.message}</div>`;
+  }
+}
+
+async function resetDataset() {
+  await fetch("/api/dataset/reset", { method: "POST" });
+  document.getElementById("uploadOut").innerHTML = "";
+  await loadAnalysis();
+}
+
+function downloadReport() { window.location.href = "/api/report"; }
+
+(async function init() {
+  try {
+    await loadHealth();
+    await loadAnalysis();
+  } catch (e) {
+    document.getElementById("datasetLine").textContent = "载入失败：" + e.message;
+  }
+})();
+</script>
+</body>
+</html>

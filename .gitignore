@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 运行时产物
+outputs/*.db
+outputs/report.md
+outputs/signals.csv
+outputs/signals.json
+
+# 用户上传的数据集
+app/data/*
+!app/data/.gitkeep
+
+# Power BI 备份/模板文件（.pbix 源文件要提交，方便直接打开查看 DAX）
+*.pbit
+*.pbix.bak

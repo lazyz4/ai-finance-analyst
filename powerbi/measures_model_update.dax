@@ -1,0 +1,273 @@
+// ============================================================================
+// 一次性写入模型的度量值脚本（55 个）
+//
+// 用法：
+//   1. 先在 Power BI 里导入三张表：年度透视、指标监测、季度明细（见 README 第 2 步）
+//   2. 左侧视图栏点「DAX 查询视图」
+//   3. 把本文件全部内容粘贴进去，覆盖默认内容
+//   4. 点工具栏的「更新模型」（Update model）
+//   5. 回到「报表视图」，右侧数据窗格里「年度透视」「指标监测」「季度明细」
+//      下面就会出现所有这些度量值
+//
+// 说明：本脚本不需要在 Power BI 里建立任何表关系。
+//       规则字段（方向、阈值、规则说明）已经拍平在「指标监测」表里，
+//       所以矩阵按「指标监测[item]」逐行显示时，度量值直接就能取到对应阈值。
+//
+// 如果「更新模型」报错，退路是逐个新建度量值：从 measures.dax 里一条条复制。
+// ============================================================================
+
+DEFINE
+
+    // ------------------------------------------------------------------
+    // 一、核心 KPI
+    // ------------------------------------------------------------------
+    MEASURE '年度透视'[营业总收入] = MAX ( '年度透视'[rev_2025] )
+    MEASURE '年度透视'[营业总收入 上年] = MAX ( '年度透视'[rev_2024] )
+    MEASURE '年度透视'[营业总收入 同比] = DIVIDE ( [营业总收入], [营业总收入 上年] ) - 1
+
+    MEASURE '年度透视'[净利润] = MAX ( '年度透视'[ni_2025] )
+    MEASURE '年度透视'[净利润 上年] = MAX ( '年度透视'[ni_2024] )
+    MEASURE '年度透视'[净利润 同比] = DIVIDE ( [净利润], [净利润 上年] ) - 1
+
+    MEASURE '年度透视'[经营活动现金流净额] = MAX ( '年度透视'[ocf_2025] )
+    MEASURE '年度透视'[经营活动现金流净额 上年] = MAX ( '年度透视'[ocf_2024] )
+    MEASURE '年度透视'[经营活动现金流净额 同比] =
+        DIVIDE ( [经营活动现金流净额], [经营活动现金流净额 上年] ) - 1
+
+    MEASURE '年度透视'[营业成本 同比] =
+        DIVIDE ( MAX ( '年度透视'[cogs_2025] ), MAX ( '年度透视'[cogs_2024] ) ) - 1
+    MEASURE '年度透视'[营业利润 同比] =
+        DIVIDE ( MAX ( '年度透视'[op_2025] ), MAX ( '年度透视'[op_2024] ) ) - 1
+
+    // ------------------------------------------------------------------
+    // 二、盈利质量
+    // ------------------------------------------------------------------
+    MEASURE '年度透视'[毛利率 2025] =
+        DIVIDE ( MAX ( '年度透视'[rev_2025] ) - MAX ( '年度透视'[cogs_2025] ), MAX ( '年度透视'[rev_2025] ) )
+    MEASURE '年度透视'[毛利率 2024] =
+        DIVIDE ( MAX ( '年度透视'[rev_2024] ) - MAX ( '年度透视'[cogs_2024] ), MAX ( '年度透视'[rev_2024] ) )
+    MEASURE '年度透视'[毛利率 变化_百分点] = ( [毛利率 2025] - [毛利率 2024] ) * 100
+
+    MEASURE '年度透视'[净利率 2025] =
+        DIVIDE ( MAX ( '年度透视'[ni_2025] ), MAX ( '年度透视'[rev_2025] ) )
+    MEASURE '年度透视'[净利率 2024] =
+        DIVIDE ( MAX ( '年度透视'[ni_2024] ), MAX ( '年度透视'[rev_2024] ) )
+    MEASURE '年度透视'[净利率 变化_百分点] = ( [净利率 2025] - [净利率 2024] ) * 100
+
+    MEASURE '年度透视'[经营现金流率 2025] =
+        DIVIDE ( MAX ( '年度透视'[ocf_2025] ), MAX ( '年度透视'[rev_2025] ) )
+    MEASURE '年度透视'[经营现金流率 2024] =
+        DIVIDE ( MAX ( '年度透视'[ocf_2024] ), MAX ( '年度透视'[rev_2024] ) )
+    MEASURE '年度透视'[经营现金流率 变化_百分点] =
+        ( [经营现金流率 2025] - [经营现金流率 2024] ) * 100
+
+    MEASURE '年度透视'[三费占收入比 2025] =
+        DIVIDE (
+            MAX ( '年度透视'[sell_2025] ) + MAX ( '年度透视'[admin_2025] ) + MAX ( '年度透视'[rd_2025] ),
+            MAX ( '年度透视'[rev_2025] )
+        )
+    MEASURE '年度透视'[三费占收入比 2024] =
+        DIVIDE (
+            MAX ( '年度透视'[sell_2024] ) + MAX ( '年度透视'[admin_2024] ) + MAX ( '年度透视'[rd_2024] ),
+            MAX ( '年度透视'[rev_2024] )
+        )
+    MEASURE '年度透视'[三费占收入比 变化_百分点] =
+        ( [三费占收入比 2025] - [三费占收入比 2024] ) * 100
+
+    // ------------------------------------------------------------------
+    // 三、营运资本与现金质量（周转天数按期末余额计算）
+    // ------------------------------------------------------------------
+    MEASURE '年度透视'[现金含量 2025] =
+        DIVIDE ( MAX ( '年度透视'[ocf_2025] ), MAX ( '年度透视'[ni_2025] ) )
+    MEASURE '年度透视'[现金含量 2024] =
+        DIVIDE ( MAX ( '年度透视'[ocf_2024] ), MAX ( '年度透视'[ni_2024] ) )
+    MEASURE '年度透视'[现金含量 变化] = [现金含量 2025] - [现金含量 2024]
+
+    MEASURE '年度透视'[应收账款周转天数 2025] =
+        DIVIDE ( MAX ( '年度透视'[ar_2025] ), MAX ( '年度透视'[rev_2025] ) ) * 365
+    MEASURE '年度透视'[应收账款周转天数 2024] =
+        DIVIDE ( MAX ( '年度透视'[ar_2024] ), MAX ( '年度透视'[rev_2024] ) ) * 365
+    MEASURE '年度透视'[应收账款周转天数 变化] =
+        [应收账款周转天数 2025] - [应收账款周转天数 2024]
+
+    MEASURE '年度透视'[存货周转天数 2025] =
+        DIVIDE ( MAX ( '年度透视'[inv_2025] ), MAX ( '年度透视'[cogs_2025] ) ) * 365
+    MEASURE '年度透视'[存货周转天数 2024] =
+        DIVIDE ( MAX ( '年度透视'[inv_2024] ), MAX ( '年度透视'[cogs_2024] ) ) * 365
+    MEASURE '年度透视'[存货周转天数 变化] = [存货周转天数 2025] - [存货周转天数 2024]
+
+    MEASURE '年度透视'[应付账款周转天数 2025] =
+        DIVIDE ( MAX ( '年度透视'[ap_2025] ), MAX ( '年度透视'[cogs_2025] ) ) * 365
+    MEASURE '年度透视'[应付账款周转天数 2024] =
+        DIVIDE ( MAX ( '年度透视'[ap_2024] ), MAX ( '年度透视'[cogs_2024] ) ) * 365
+    MEASURE '年度透视'[应付账款周转天数 变化] =
+        [应付账款周转天数 2025] - [应付账款周转天数 2024]
+
+    MEASURE '年度透视'[现金转换周期 2025] =
+        [应收账款周转天数 2025] + [存货周转天数 2025] - [应付账款周转天数 2025]
+    MEASURE '年度透视'[现金转换周期 2024] =
+        [应收账款周转天数 2024] + [存货周转天数 2024] - [应付账款周转天数 2024]
+    MEASURE '年度透视'[现金转换周期 变化] = [现金转换周期 2025] - [现金转换周期 2024]
+
+    MEASURE '年度透视'[总资产周转率 2025] =
+        DIVIDE ( MAX ( '年度透视'[rev_2025] ), MAX ( '年度透视'[ta_2025] ) )
+    MEASURE '年度透视'[总资产周转率 2024] =
+        DIVIDE ( MAX ( '年度透视'[rev_2024] ), MAX ( '年度透视'[ta_2024] ) )
+    MEASURE '年度透视'[总资产周转率 变化] = [总资产周转率 2025] - [总资产周转率 2024]
+
+    // ------------------------------------------------------------------
+    // 四、规则引擎：用 DAX 重算一遍监测值，再按阈值判定状态
+    // ------------------------------------------------------------------
+    MEASURE '指标监测'[监测值_DAX] =
+        VAR rev24 = MAX ( '年度透视'[rev_2024] )
+        VAR rev25 = MAX ( '年度透视'[rev_2025] )
+        VAR cogs24 = MAX ( '年度透视'[cogs_2024] )
+        VAR cogs25 = MAX ( '年度透视'[cogs_2025] )
+        VAR sell24 = MAX ( '年度透视'[sell_2024] )
+        VAR sell25 = MAX ( '年度透视'[sell_2025] )
+        VAR admin24 = MAX ( '年度透视'[admin_2024] )
+        VAR admin25 = MAX ( '年度透视'[admin_2025] )
+        VAR rd24 = MAX ( '年度透视'[rd_2024] )
+        VAR rd25 = MAX ( '年度透视'[rd_2025] )
+        VAR op24 = MAX ( '年度透视'[op_2024] )
+        VAR op25 = MAX ( '年度透视'[op_2025] )
+        VAR ni24 = MAX ( '年度透视'[ni_2024] )
+        VAR ni25 = MAX ( '年度透视'[ni_2025] )
+        VAR ocf24 = MAX ( '年度透视'[ocf_2024] )
+        VAR ocf25 = MAX ( '年度透视'[ocf_2025] )
+        VAR ar24 = MAX ( '年度透视'[ar_2024] )
+        VAR ar25 = MAX ( '年度透视'[ar_2025] )
+        VAR inv24 = MAX ( '年度透视'[inv_2024] )
+        VAR inv25 = MAX ( '年度透视'[inv_2025] )
+        VAR ap24 = MAX ( '年度透视'[ap_2024] )
+        VAR ap25 = MAX ( '年度透视'[ap_2025] )
+        VAR cash24 = MAX ( '年度透视'[cash_2024] )
+        VAR cash25 = MAX ( '年度透视'[cash_2025] )
+        VAR ta24 = MAX ( '年度透视'[ta_2024] )
+        VAR ta25 = MAX ( '年度透视'[ta_2025] )
+        VAR gm24 = DIVIDE ( rev24 - cogs24, rev24 )
+        VAR gm25 = DIVIDE ( rev25 - cogs25, rev25 )
+        VAR sellRate24 = DIVIDE ( sell24, rev24 )
+        VAR sellRate25 = DIVIDE ( sell25, rev25 )
+        VAR adminRate24 = DIVIDE ( admin24, rev24 )
+        VAR adminRate25 = DIVIDE ( admin25, rev25 )
+        VAR rdRate24 = DIVIDE ( rd24, rev24 )
+        VAR rdRate25 = DIVIDE ( rd25, rev25 )
+        VAR niRate24 = DIVIDE ( ni24, rev24 )
+        VAR niRate25 = DIVIDE ( ni25, rev25 )
+        VAR ocfRate24 = DIVIDE ( ocf24, rev24 )
+        VAR ocfRate25 = DIVIDE ( ocf25, rev25 )
+        VAR arRev24 = DIVIDE ( ar24, rev24 )
+        VAR arRev25 = DIVIDE ( ar25, rev25 )
+        VAR three24 = DIVIDE ( sell24 + admin24 + rd24, rev24 )
+        VAR three25 = DIVIDE ( sell25 + admin25 + rd25, rev25 )
+        VAR dso24 = DIVIDE ( ar24, rev24 ) * 365
+        VAR dso25 = DIVIDE ( ar25, rev25 ) * 365
+        VAR dio24 = DIVIDE ( inv24, cogs24 ) * 365
+        VAR dio25 = DIVIDE ( inv25, cogs25 ) * 365
+        VAR dpo24 = DIVIDE ( ap24, cogs24 ) * 365
+        VAR dpo25 = DIVIDE ( ap25, cogs25 ) * 365
+        VAR curItem = SELECTEDVALUE ( '指标监测'[item] )
+        RETURN
+            SWITCH (
+                curItem,
+                "营业总收入", DIVIDE ( rev25, rev24 ) * 100 - 100,
+                "营业成本", DIVIDE ( cogs25, cogs24 ) * 100 - 100,
+                "毛利额", DIVIDE ( rev25 - cogs25, rev24 - cogs24 ) * 100 - 100,
+                "毛利率", ( gm25 - gm24 ) * 100,
+                "销售费用率", ( sellRate25 - sellRate24 ) * 100,
+                "管理费用率", ( adminRate25 - adminRate24 ) * 100,
+                "研发费用率", ( rdRate25 - rdRate24 ) * 100,
+                "营业利润", DIVIDE ( op25, op24 ) * 100 - 100,
+                "净利率", ( niRate25 - niRate24 ) * 100,
+                "经营现金流率", ( ocfRate25 - ocfRate24 ) * 100,
+                "应收账款", DIVIDE ( ar25, ar24 ) * 100 - 100,
+                "应收账款/收入", ( arRev25 - arRev24 ) * 100,
+                "存货", DIVIDE ( inv25, inv24 ) * 100 - 100,
+                "应付账款", DIVIDE ( ap25, ap24 ) * 100 - 100,
+                "货币资金", DIVIDE ( cash25, cash24 ) * 100 - 100,
+                "现金含量", DIVIDE ( ocf25, ni25 ) - DIVIDE ( ocf24, ni24 ),
+                "三费占收入比", ( three25 - three24 ) * 100,
+                "应收账款周转天数", dso25 - dso24,
+                "存货周转天数", dio25 - dio24,
+                "应付账款周转天数", dpo25 - dpo24,
+                "现金转换周期", ( dso25 + dio25 - dpo25 ) - ( dso24 + dio24 - dpo24 ),
+                "总资产周转率", DIVIDE ( rev25, ta25 ) - DIVIDE ( rev24, ta24 )
+            )
+
+    MEASURE '指标监测'[状态] =
+        VAR monitorVal = [监测值_DAX]
+        VAR thrDirection = SELECTEDVALUE ( '指标监测'[direction] )
+        VAR thrWatch = SELECTEDVALUE ( '指标监测'[watch_threshold] )
+        VAR thrAlert = SELECTEDVALUE ( '指标监测'[alert_threshold] )
+        RETURN
+            SWITCH (
+                TRUE (),
+                ISBLANK ( monitorVal ) || ISBLANK ( thrDirection ), "无规则",
+                thrDirection = "高于" && monitorVal >= thrAlert, "预警",
+                thrDirection = "高于" && monitorVal >= thrWatch, "关注",
+                thrDirection = "低于" && monitorVal <= thrAlert, "预警",
+                thrDirection = "低于" && monitorVal <= thrWatch, "关注",
+                "正常"
+            )
+
+    MEASURE '指标监测'[触发规则] =
+        IF ( [状态] = "正常", "—", SELECTEDVALUE ( '指标监测'[rule_desc] ) )
+    MEASURE '指标监测'[监测值_SQL] = SELECTEDVALUE ( '指标监测'[sql_monitor_value] )
+    MEASURE '指标监测'[对账_差值] = [监测值_DAX] - [监测值_SQL]
+    MEASURE '指标监测'[对账_状态一致] =
+        VAR sqlStatus = SELECTEDVALUE ( '指标监测'[sql_status] )
+        RETURN
+            IF (
+                ISBLANK ( sqlStatus ),
+                "未比对",
+                IF ( sqlStatus = [状态], "一致", "不一致" )
+            )
+
+    // ------------------------------------------------------------------
+    // 五、信号汇总
+    // ------------------------------------------------------------------
+    MEASURE '指标监测'[预警数] =
+        CALCULATE ( COUNTROWS ( '指标监测' ), '指标监测'[sql_status] = "预警" )
+    MEASURE '指标监测'[关注数] =
+        CALCULATE ( COUNTROWS ( '指标监测' ), '指标监测'[sql_status] = "关注" )
+    MEASURE '指标监测'[正常数] =
+        CALCULATE ( COUNTROWS ( '指标监测' ), '指标监测'[sql_status] = "正常" )
+    MEASURE '指标监测'[指标总数] = COUNTROWS ( '指标监测' )
+    MEASURE '指标监测'[风险信号数] = [预警数] + [关注数]
+
+    MEASURE '指标监测'[风险信号文本] =
+        "共判定 " & [指标总数] & " 项指标：预警 " & [预警数] & " 项、关注 " & [关注数]
+            & " 项、正常 " & [正常数] & " 项。"
+
+    MEASURE '年度透视'[核心矛盾文本] =
+        "营业总收入同比 " & FORMAT ( [营业总收入 同比], "0.0%" )
+            & "，净利润同比 " & FORMAT ( [净利润 同比], "0.0%" )
+            & "，但经营活动现金流净额同比 " & FORMAT ( [经营活动现金流净额 同比], "0.0%" )
+            & "；现金含量由 " & FORMAT ( [现金含量 2024], "0.00" )
+            & " 倍降至 " & FORMAT ( [现金含量 2025], "0.00" )
+            & " 倍，现金转换周期却由 " & FORMAT ( [现金转换周期 2024], "0.0" )
+            & " 天改善至 " & FORMAT ( [现金转换周期 2025], "0.0" ) & " 天。"
+
+    // ------------------------------------------------------------------
+    // 六、季度视图
+    // ------------------------------------------------------------------
+    MEASURE '季度明细'[季度营业收入] =
+        CALCULATE ( SUM ( '季度明细'[value] ), '季度明细'[item] = "营业收入" )
+    MEASURE '季度明细'[季度归母净利润] =
+        CALCULATE ( SUM ( '季度明细'[value] ), '季度明细'[item] = "归母净利润" )
+    MEASURE '季度明细'[季度经营活动现金流净额] =
+        CALCULATE ( SUM ( '季度明细'[value] ), '季度明细'[item] = "经营活动现金流净额" )
+    MEASURE '季度明细'[季度收入环比] =
+        VAR qCurrent = SELECTEDVALUE ( '季度明细'[quarter] )
+        VAR qPrev = SWITCH ( qCurrent, "Q2", "Q1", "Q3", "Q2", "Q4", "Q3" )
+        RETURN
+            DIVIDE (
+                [季度营业收入],
+                CALCULATE ( [季度营业收入], '季度明细'[quarter] = qPrev )
+            ) - 1
+    MEASURE '季度明细'[季度现金流提示] =
+        IF ( [季度经营活动现金流净额] < 0, "预警：经营现金流为负", "正常观察" )
+
+EVALUATE
+    ROW ( "写入结果", "度量值已提交到模型" )

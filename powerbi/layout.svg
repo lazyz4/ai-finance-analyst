@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="740" viewBox="0 0 1300 740"
+     font-family="Microsoft YaHei, Segoe UI, sans-serif">
+  <rect width="1300" height="740" fill="#F4F6FB"/>
+
+  <!-- ============ 页面 1 总览 ============ -->
+  <g>
+    <rect x="16" y="16" width="620" height="344" rx="6" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="34" y="42" font-size="15" font-weight="bold" fill="#1F3B63">页面 1　总览</text>
+
+    <g font-size="11" fill="#FFFFFF" text-anchor="middle">
+      <rect x="34" y="56" width="112" height="58" rx="4" fill="#1F3B63"/>
+      <text x="90" y="78">营业总收入</text>
+      <text x="90" y="100" font-size="13" font-weight="bold">458,502</text>
+      <rect x="154" y="56" width="112" height="58" rx="4" fill="#1F3B63"/>
+      <text x="210" y="78">净利润</text>
+      <text x="210" y="100" font-size="13" font-weight="bold">44,520</text>
+      <rect x="274" y="56" width="112" height="58" rx="4" fill="#1F3B63"/>
+      <text x="330" y="78">经营现金流净额</text>
+      <text x="330" y="100" font-size="13" font-weight="bold">53,346</text>
+      <rect x="394" y="56" width="112" height="58" rx="4" fill="#1F3B63"/>
+      <text x="450" y="78">现金含量</text>
+      <text x="450" y="100" font-size="13" font-weight="bold">1.20 倍</text>
+      <rect x="514" y="56" width="104" height="58" rx="4" fill="#1F3B63"/>
+      <text x="566" y="78">现金转换周期</text>
+      <text x="566" y="100" font-size="13" font-weight="bold">-10.2 天</text>
+    </g>
+
+    <rect x="34" y="126" width="584" height="58" rx="4" fill="#EAF0F7" stroke="#D9D9D9"/>
+    <text x="46" y="148" font-size="11" fill="#1F3B63" font-weight="bold">核心矛盾</text>
+    <text x="46" y="168" font-size="11" fill="#1A1A1A">收入 +12.1%、净利润 +14.9%，但经营现金流 -11.8%；现金含量 1.56 → 1.20 倍，现金转换周期 -4.0 → -10.2 天</text>
+
+    <rect x="34" y="196" width="584" height="146" rx="4" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="46" y="218" font-size="11" fill="#505050">分季度营业收入与经营活动现金流净额（折线与柱形）</text>
+    <line x1="46" y1="326" x2="606" y2="326" stroke="#D9D9D9"/>
+    <line x1="46" y1="238" x2="46" y2="326" stroke="#D9D9D9"/>
+    <g fill="#2E5C8A">
+      <rect x="80" y="252" width="40" height="74"/>
+      <rect x="190" y="244" width="40" height="82"/>
+      <rect x="300" y="266" width="40" height="60"/>
+      <rect x="410" y="290" width="40" height="36"/>
+    </g>
+    <polyline points="100,300 210,280 320,290 430,326" fill="none" stroke="#B45309" stroke-width="2"/>
+    <g font-size="10" fill="#505050" text-anchor="middle">
+      <text x="100" y="338">Q1</text>
+      <text x="210" y="338">Q2</text>
+      <text x="320" y="338">Q3</text>
+      <text x="430" y="338">Q4</text>
+    </g>
+    <text x="500" y="320" font-size="10" fill="#B45309">Q4 经营现金流为负</text>
+  </g>
+
+  <!-- ============ 页面 2 盈利质量 ============ -->
+  <g>
+    <rect x="652" y="16" width="620" height="344" rx="6" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="670" y="42" font-size="15" font-weight="bold" fill="#1F3B63">页面 2　盈利质量</text>
+
+    <rect x="670" y="56" width="368" height="180" rx="4" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="682" y="78" font-size="11" fill="#505050">2024 与 2025 比率对比（簇状条形图）</text>
+    <g font-size="10" fill="#505050">
+      <text x="682" y="108">毛利率</text>
+      <text x="682" y="146">净利率</text>
+      <text x="682" y="184">经营现金流率</text>
+      <text x="682" y="222">三费占收入比</text>
+    </g>
+    <g>
+      <rect x="760" y="98" width="88" height="9" fill="#9DB8D6"/>
+      <rect x="760" y="110" width="88" height="9" fill="#1F3B63"/>
+      <rect x="760" y="136" width="32" height="9" fill="#9DB8D6"/>
+      <rect x="760" y="148" width="32" height="9" fill="#1F3B63"/>
+      <rect x="760" y="174" width="48" height="9" fill="#9DB8D6"/>
+      <rect x="760" y="186" width="38" height="9" fill="#1F3B63"/>
+      <rect x="760" y="212" width="56" height="9" fill="#9DB8D6"/>
+      <rect x="760" y="224" width="55" height="9" fill="#1F3B63"/>
+    </g>
+    <g font-size="9" fill="#505050">
+      <text x="866" y="107">2024</text>
+      <text x="866" y="119">2025</text>
+    </g>
+
+    <rect x="1052" y="56" width="204" height="180" rx="4" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="1064" y="78" font-size="11" fill="#505050">变化（百分点）</text>
+    <g font-size="10" fill="#1A1A1A">
+      <text x="1064" y="106">毛利率　　-0.05</text>
+      <text x="1064" y="132">净利率　　+0.24</text>
+      <text x="1064" y="158">经营现金流率　-3.16</text>
+      <text x="1064" y="184">三费占收入比　-0.24</text>
+    </g>
+    <rect x="1064" y="196" width="180" height="30" rx="3" fill="#FEF3C7" stroke="#D9A21B"/>
+    <text x="1074" y="215" font-size="10" fill="#B45309">经营现金流率触发关注规则</text>
+
+    <rect x="670" y="250" width="586" height="92" rx="4" fill="#EAF0F7" stroke="#D9D9D9"/>
+    <text x="682" y="272" font-size="11" fill="#1F3B63" font-weight="bold">结论要点</text>
+    <text x="682" y="294" font-size="11" fill="#1A1A1A">利润端改善来自净利率上升 0.24 个百分点，三费占收入比下降 0.24 个百分点，费用管控与毛利结构未恶化。</text>
+    <text x="682" y="316" font-size="11" fill="#1A1A1A">经营现金流率下降 3.16 个百分点，是四个比率中唯一触发规则的一项，需回到现金流量表补充资料核查。</text>
+  </g>
+
+  <!-- ============ 页面 3 营运资本 ============ -->
+  <g>
+    <rect x="16" y="376" width="620" height="344" rx="6" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="34" y="402" font-size="15" font-weight="bold" fill="#1F3B63">页面 3　营运资本与现金质量</text>
+
+    <rect x="34" y="416" width="368" height="180" rx="4" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="46" y="438" font-size="11" fill="#505050">周转天数：2024 与 2025（簇状条形图）</text>
+    <g font-size="10" fill="#505050">
+      <text x="46" y="470">应收账款</text>
+      <text x="46" y="508">存货</text>
+      <text x="46" y="546">应付账款</text>
+    </g>
+    <g>
+      <rect x="124" y="460" width="96" height="9" fill="#9DB8D6"/>
+      <rect x="124" y="472" width="97" height="9" fill="#1F3B63"/>
+      <rect x="124" y="498" width="231" height="9" fill="#9DB8D6"/>
+      <rect x="124" y="510" width="211" height="9" fill="#1F3B63"/>
+      <rect x="124" y="536" width="339" height="9" fill="#9DB8D6"/>
+      <rect x="124" y="548" width="338" height="9" fill="#1F3B63"/>
+    </g>
+    <text x="46" y="582" font-size="10" fill="#B45309">存货周转天数下降 6.96 天，是周期改善的主要来源</text>
+
+    <rect x="420" y="416" width="202" height="84" rx="4" fill="#1F3B63"/>
+    <text x="521" y="442" font-size="11" fill="#FFFFFF" text-anchor="middle">现金转换周期</text>
+    <text x="521" y="470" font-size="17" font-weight="bold" fill="#FFFFFF" text-anchor="middle">-10.2 天</text>
+    <text x="521" y="490" font-size="10" fill="#DCE6F1" text-anchor="middle">较上年改善 6.27 天</text>
+
+    <rect x="420" y="512" width="202" height="84" rx="4" fill="#FEF3C7" stroke="#D9A21B"/>
+    <text x="521" y="538" font-size="11" fill="#B45309" text-anchor="middle">现金含量</text>
+    <text x="521" y="566" font-size="17" font-weight="bold" fill="#B45309" text-anchor="middle">1.20 倍</text>
+    <text x="521" y="586" font-size="10" fill="#B45309" text-anchor="middle">较上年下降 0.36 倍（关注）</text>
+
+    <rect x="34" y="612" width="588" height="92" rx="4" fill="#EAF0F7" stroke="#D9D9D9"/>
+    <text x="46" y="634" font-size="11" fill="#1F3B63" font-weight="bold">方向不一致</text>
+    <text x="46" y="656" font-size="11" fill="#1A1A1A">营运资本占用在减少，经营现金流净额却同比下降 11.8%。两者方向相反，说明现金流出变化来自营运资本</text>
+    <text x="46" y="676" font-size="11" fill="#1A1A1A">以外的项目，需要核查合同负债、其他经营性应收应付、支付的各项税费与收入结构变化。</text>
+  </g>
+
+  <!-- ============ 页面 4 异常清单 ============ -->
+  <g>
+    <rect x="652" y="376" width="620" height="344" rx="6" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <text x="670" y="402" font-size="15" font-weight="bold" fill="#1F3B63">页面 4　异常清单与对账</text>
+
+    <g text-anchor="middle" font-size="11">
+      <rect x="670" y="416" width="120" height="56" rx="4" fill="#FEE2E2" stroke="#B91C1C"/>
+      <text x="730" y="440" fill="#B91C1C">预警</text>
+      <text x="730" y="462" font-size="15" font-weight="bold" fill="#B91C1C">0</text>
+      <rect x="802" y="416" width="120" height="56" rx="4" fill="#FEF3C7" stroke="#D9A21B"/>
+      <text x="862" y="440" fill="#B45309">关注</text>
+      <text x="862" y="462" font-size="15" font-weight="bold" fill="#B45309">3</text>
+      <rect x="934" y="416" width="120" height="56" rx="4" fill="#F1F5F9" stroke="#D9D9D9"/>
+      <text x="994" y="440" fill="#505050">正常</text>
+      <text x="994" y="462" font-size="15" font-weight="bold" fill="#505050">19</text>
+    </g>
+
+    <rect x="670" y="484" width="586" height="220" rx="4" fill="#FFFFFF" stroke="#D9D9D9"/>
+    <rect x="670" y="484" width="586" height="28" fill="#1F3B63"/>
+    <g font-size="10" fill="#FFFFFF">
+      <text x="682" y="503">指标</text>
+      <text x="806" y="503">监测口径</text>
+      <text x="900" y="503">监测值</text>
+      <text x="976" y="503">关注阈值</text>
+      <text x="1064" y="503">状态</text>
+      <text x="1120" y="503">对账</text>
+    </g>
+    <g font-size="10" fill="#1A1A1A">
+      <rect x="670" y="512" width="586" height="30" fill="#FEF3C7"/>
+      <text x="682" y="532">现金含量</text>
+      <text x="806" y="532">倍（同比变化）</text>
+      <text x="900" y="532">-0.3631</text>
+      <text x="976" y="532">-0.30</text>
+      <text x="1064" y="532" fill="#B45309" font-weight="bold">关注</text>
+      <text x="1120" y="532" fill="#15803D">一致</text>
+
+      <rect x="670" y="542" width="586" height="30" fill="#FFFFFF"/>
+      <text x="682" y="562">经营现金流率</text>
+      <text x="806" y="562">pp（百分点变化）</text>
+      <text x="900" y="562">-3.1571</text>
+      <text x="976" y="562">-2.00</text>
+      <text x="1064" y="562" fill="#B45309" font-weight="bold">关注</text>
+      <text x="1120" y="562" fill="#15803D">一致</text>
+
+      <rect x="670" y="572" width="586" height="30" fill="#FEF3C7"/>
+      <text x="682" y="592">货币资金</text>
+      <text x="806" y="592">%（同比变化率）</text>
+      <text x="900" y="592">-39.2871</text>
+      <text x="976" y="592">-30.00</text>
+      <text x="1064" y="592" fill="#B45309" font-weight="bold">关注</text>
+      <text x="1120" y="592" fill="#15803D">一致</text>
+
+      <rect x="670" y="602" width="586" height="30" fill="#FFFFFF"/>
+      <text x="682" y="622">三费占收入比</text>
+      <text x="806" y="622">pp（百分点变化）</text>
+      <text x="900" y="622">-0.2433</text>
+      <text x="976" y="622">+1.00</text>
+      <text x="1064" y="622" fill="#505050">正常</text>
+      <text x="1120" y="622" fill="#15803D">一致</text>
+
+      <rect x="670" y="632" width="586" height="30" fill="#F1F5F9"/>
+      <text x="682" y="652">其余 18 项指标……</text>
+      <text x="806" y="652">—</text>
+      <text x="900" y="652">—</text>
+      <text x="976" y="652">—</text>
+      <text x="1064" y="652">正常</text>
+      <text x="1120" y="652" fill="#15803D">一致</text>
+    </g>
+    <text x="670" y="722" font-size="10" fill="#505050">对账列：DAX 计算的监测值与 SQL 视图 v_indicator_monitor 逐行比对，22 项全部一致</text>
+  </g>
+</svg>
